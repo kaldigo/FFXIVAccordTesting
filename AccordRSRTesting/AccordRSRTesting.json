@@ -1,0 +1,10 @@
+{
+  "Author": "kaldigo",
+  "Name": "Accord RSR Test",
+  "InternalName": "AccordRSRTesting",
+  "DalamudApiLevel": 15,
+  "RepoUrl": "https://github.com/kaldigo/FFXIVAccordTesting",
+  "Punchline": "Opt-in workbench for the RSR-based Accord redesign.",
+  "Description": "Separate experimental Accord client with isolated settings and /accordtest. Starts disabled each session. Runs the native RSR baseline and observes its existing selectors; redesigned hotbar buttons and automation policies are not yet implemented. Does not replace stable Accord or migrate its settings.",
+  "Tags": ["combat", "configuration", "testing"]
+}
