@@ -1,36 +1,9 @@
-# Accord RSR Test
+# Accord testing workspace
 
-An opt-in RSR-based Accord redesign, independent of [stable Accord](https://github.com/kaldigo/FFXIVAccord). Stable fixes and updates can continue without merging this experiment. The client is built from new source rather than inheriting the Wrath settings and hotbar implementation.
+An empty implementation workspace for a ground-up RSR-based Accord redesign. No plugin implementation, session controls, intent model, hotbar logic or migration is included.
 
-## Initial testing build
+Stable Accord remains in kaldigo/FFXIVAccord with its own identity, versions and publish flow. Future testing builds use AccordRSRTesting in this repository so stable updates can continue independently.
 
-This build provides an isolated test session, native RSR rotation controls and observations of RSR's existing intent selectors. It is a baseline for redesigning intent buttons and automation ownership. It does not yet apply hotbars, execute intent buttons or reproduce Accord's four automation switches. RSR's own detailed settings govern rotation, healing and defence during the experiment.
+The build workflow validates this workspace. The manual publish workflow is scaffolded but refuses to release anything until release-config.json names an implemented project. The install feed is currently empty. Previous 0.1.0.0 experiment releases are withdrawn.
 
-Both packages have separate identities and configuration stores:
-
-| Plugin | Internal identity | Command |
-|---|---|---|
-| Accord RSR Test | AccordRSRTesting | /accordtest |
-| Rotation Solver Reborn - Accord Test | AccordRSREngine | /rsrtest or /rotationtest |
-| Stable Accord, unchanged | Accord | /accord |
-
-Version 0.1.0.0 is available through this separate [testing feed](https://raw.githubusercontent.com/kaldigo/FFXIVAccordTesting/main/pluginmaster.json). Add that URL in XIVLauncher settings, Experimental, Custom Plugin Repositories, then install **Accord RSR Test** and **Rotation Solver Reborn - Accord Test**. Installation does not enable a test session.
-
-The feed contains only the two experimental identities. It does not use the testing-version mechanism for stable Accord, so opting in cannot replace stable Accord or hold back its updates. Packages passed the independent [Windows build and checks](https://github.com/kaldigo/FFXIVAccordTesting/actions/runs/41433970298). Native in-game acceptance remains pending.
-
-## Testing
-
-1. Install both experimental packages from the separate testing feed.
-2. Disable stock RSR before loading the fork. Disable stable Accord and Wrath before enabling a test session.
-3. Open `/accordtest` and enable the session. Configure the engine through `/rsrtest`.
-4. Start the rotation when ready. Manual enemy targeting still automatically executes actions. Existing RSR auto-start options also apply within an enabled session.
-5. Open the engine's full control window to populate cached healing, defence and movement suggestions. These observations are not executable intent buttons.
-6. End the session before returning to stable Accord/Wrath. Disable the experimental plugins and re-enable the stable plugins; their settings were not migrated.
-
-Consent resets on client load. Loss of the client heartbeat stops execution after four seconds. A loaded stable Accord/Wrath/stock RSR or PvP also blocks execution. Nothing is installed or enabled by building this repository.
-
-## Development
-
-Use .NET 10 and Dalamud API 15. `tools/build.ps1` accepts the independent engine checkout and builds both plugins plus the engine's session tests. The release pair is pinned by `engine-validation.ref`. `tools/package.py` makes the two isolated archives, checksums, and a separate feed. The GitHub build workflow produces candidate artifacts only; it does not publish or modify a stable feed.
-
-Native acceptance remains pending. Start with session expiry, reload/load order, conflicting plugins and PvP transitions before combat comparisons. [Design direction](docs/design.md) records the redesign boundaries.
+The RSR fork retains its original RotationSolver identity, configuration and behaviour. Its only runtime addition is the settings interface described in the fork's SETTINGS-API.md. This workspace does not pin or bundle an engine yet. Migration is deferred.

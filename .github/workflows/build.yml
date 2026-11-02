@@ -1,4 +1,4 @@
-name: Build experiment candidates
+name: Validate testing workspace
 on:
   push:
     branches: [main]
@@ -8,39 +8,16 @@ on:
 permissions:
   contents: read
 jobs:
-  build:
+  validate:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Download Dalamud API 15 references
+      - run: python tools/workspace.py
+      - name: Check scaffold cannot publish an empty implementation
         shell: pwsh
         run: |
-          Invoke-WebRequest https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile "$env:RUNNER_TEMP/dalamud.zip"
-          Expand-Archive "$env:RUNNER_TEMP/dalamud.zip" "$env:APPDATA/XIVLauncher/addon/Hooks/dev" -Force
-      - name: Checkout exact experimental engine
-        shell: pwsh
-        run: |
-          $pin=(Get-Content engine-validation.ref -Raw).Trim()
-          if ($pin -notmatch '^[a-f0-9]{40}$') { throw 'Engine pin must be a full SHA' }
-          git clone --no-checkout https://github.com/kaldigo/RotationSolverReborn.git "$env:RUNNER_TEMP/rsr-engine"
-          if ($LASTEXITCODE) { throw 'Engine clone failed' }
-          git -C "$env:RUNNER_TEMP/rsr-engine" checkout --detach $pin
-          if ($LASTEXITCODE) { throw 'Pinned engine unavailable' }
-      - name: Build and check independent plugins
-        shell: pwsh
-        run: ./tools/build.ps1 -EngineSourceRoot "$env:RUNNER_TEMP/rsr-engine"
-      - name: Package isolated candidate feed
-        shell: pwsh
-        run: |
-          python tools/package.py --engine-root "$env:RUNNER_TEMP/rsr-engine" --version 0.1.0.0
-          if ($LASTEXITCODE) { exit $LASTEXITCODE }
-      - uses: actions/upload-artifact@v4
-        with:
-          name: accord-rsr-candidate
-          path: artifacts/*
+          python -c "import sys; sys.path.insert(0,'tools'); from workspace import config; assert config()['project'] is None"
+          if ($LASTEXITCODE) { throw 'Replace this scaffold check when a client implementation is requested' }

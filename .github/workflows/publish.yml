@@ -1,0 +1,51 @@
+name: Publish testing client
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: New four-part testing version
+        required: true
+        type: string
+permissions:
+  contents: write
+concurrency:
+  group: accord-testing-publish
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Require an implemented client before publication
+        run: python tools/workspace.py --require-project
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Prepare Dalamud references
+        shell: pwsh
+        run: |
+          Invoke-WebRequest https://goatcorp.github.io/dalamud-distrib/latest.zip -OutFile "$env:RUNNER_TEMP/dalamud.zip"
+          Expand-Archive "$env:RUNNER_TEMP/dalamud.zip" "$env:APPDATA/XIVLauncher/addon/Hooks/dev" -Force
+      - name: Publish a new independent testing release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_VERSION: ${{ inputs.version }}
+        shell: pwsh
+        run: |
+          python tools/publish.py --version $env:RELEASE_VERSION
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Update only the testing feed
+        shell: pwsh
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add pluginmaster.json
+          git commit -m 'Update independent testing feed'
+          if ($LASTEXITCODE) { throw 'Feed commit failed' }
+          git push origin HEAD:main
+          if ($LASTEXITCODE) { throw 'Feed push failed; recover from the verified release asset' }
