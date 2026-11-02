@@ -14,7 +14,9 @@ Both packages have separate identities and configuration stores:
 | Rotation Solver Reborn - Accord Test | AccordRSREngine | /rsrtest or /rotationtest |
 | Stable Accord, unchanged | Accord | /accord |
 
-The testing feed is published only after package checks pass. It contains only the two experimental identities. It does not use the testing-version mechanism for stable Accord, so opting in cannot replace stable Accord or hold back its updates.
+Version 0.1.0.0 is available through this separate [testing feed](https://raw.githubusercontent.com/kaldigo/FFXIVAccordTesting/main/pluginmaster.json). Add that URL in XIVLauncher settings, Experimental, Custom Plugin Repositories, then install **Accord RSR Test** and **Rotation Solver Reborn - Accord Test**. Installation does not enable a test session.
+
+The feed contains only the two experimental identities. It does not use the testing-version mechanism for stable Accord, so opting in cannot replace stable Accord or hold back its updates. Packages passed the independent [Windows build and checks](https://github.com/kaldigo/FFXIVAccordTesting/actions/runs/41433970298). Native in-game acceptance remains pending.
 
 ## Testing
 
